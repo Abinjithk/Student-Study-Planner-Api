@@ -3,10 +3,12 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 from app.database import get_db
 from app.models.model import User
+from app.routers import auth
+from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
 
-
+app.include_router(auth.router)
 
 @app.get("/")
 def root():
@@ -23,3 +25,12 @@ async def create_user(name: str, email: str, db: AsyncSession = Depends(get_db))
 async def get_users(db: AsyncSession = Depends(get_db)):
     result = await db.execute(select(User))
     return result.scalars().all()
+
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=['*'],  # or ["*"] for all
+    allow_credentials=True,
+    allow_methods=["*"],  # allows POST, GET, OPTIONS, etc.
+    allow_headers=["*"],
+)
