@@ -3,12 +3,13 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 from app.database import get_db
 from app.models.model import User
-from app.routers import auth
+from app.routers import auth,admin
 from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
 
 app.include_router(auth.router)
+app.include_router(admin.router)
 
 @app.get("/")
 def root():
