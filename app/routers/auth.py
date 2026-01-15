@@ -22,15 +22,18 @@ async def login(
     # Use async select
     stmt = select(User).where(User.email == user.email)
     result = await db.execute(stmt)
-    user_in_db = result.scalar_one_or_none()
+    db_user = result.scalar_one_or_none()
 
-    if not user_in_db or not verify_password(user.password, user_in_db.hashed_password):
+    if not db_user or not verify_password(user.password, db_user.hashed_password):
         raise HTTPException(status_code=401, detail="Invalid credentials")
 
     token = create_access_token({
-        "sub": user_in_db.email,
-        "role": user_in_db.role
-    })
+    "sub": str(db_user.id),     # ✅ REQUIRED (immutable)
+    "role": db_user.role,       # ✅ authorization
+    "email": db_user.email,     # ✅ display only
+    "name": db_user.name,       # ✅ display only
+})
+
 
     # Set cookie
     response.set_cookie(
@@ -83,9 +86,12 @@ async def register(
     await db.refresh(db_user)
 
     token = create_access_token({
-        "sub": db_user.email,
-        "role": db_user.role
-    })
+    "sub": str(db_user.id),     # ✅ REQUIRED (immutable)
+    "role": db_user.role,       # ✅ authorization
+    "email": db_user.email,     # ✅ display only
+    "name": db_user.name,       # ✅ display only
+})
+
 
     return {
         "access_token": token,
