@@ -27,17 +27,27 @@ async def create_note(
     file_url = None
 
     if file:
+        content_type = file.content_type 
         # ✅ Validation
         allowed_types = ["image/jpeg", "image/png", "application/pdf"]
-        resource_type = "raw" if file.content_type == "application/pdf" else "image"
+        if content_type == "application/pdf" or file.filename.endswith(".pdf"):
+            resource_type = "raw"
+        elif content_type.startswith("image/"):
+            resource_type = "image"
+        elif content_type.startswith("video/"):
+            resource_type = "video"
+        else:
+            resource_type = "raw"
         if file.content_type not in allowed_types:
             raise HTTPException(400, "Invalid file type")
-
+        print("Here is the file", file.file)
         # ✅ Upload to Cloudinary
         upload_result = cloudinary.uploader.upload(
             file.file,
             folder="notes",
-            resource_type= resource_type
+            resource_type= resource_type,
+            use_filename=True,
+            unique_filename=False
         )
 
         file_url = upload_result["secure_url"]
