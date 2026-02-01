@@ -8,6 +8,10 @@ from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
 
+origins = [
+    "https://student-study-planner-ui.onrender.com",  # deployed frontend
+    "http://localhost:5173",  # optional: local dev
+]
 
 app.add_middleware(
     CORSMiddleware,
