@@ -8,6 +8,15 @@ from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
 
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=['*'],  # or ["*"] for all
+    allow_credentials=True,
+    allow_methods=["*"],  # allows POST, GET, OPTIONS, etc.
+    allow_headers=["*"],
+)
+
 app.include_router(auth.router)
 app.include_router(admin.router)
 app.include_router(user.router)
@@ -28,11 +37,3 @@ async def get_users(db: AsyncSession = Depends(get_db)):
     result = await db.execute(select(User))
     return result.scalars().all()
 
-
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=['*'],  # or ["*"] for all
-    allow_credentials=True,
-    allow_methods=["*"],  # allows POST, GET, OPTIONS, etc.
-    allow_headers=["*"],
-)
