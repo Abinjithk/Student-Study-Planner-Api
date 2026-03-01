@@ -6,6 +6,7 @@ import os
 
 from app.database import Base
 from app.models.user import User  # import ALL models
+from app.models.task import Task
 
 # Load .env
 load_dotenv()

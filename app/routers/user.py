@@ -78,7 +78,8 @@ async def get_notes(
         )
 
     notes = []
-    for note in notes_collection.find():
+    user_id = current_user["id"]
+    for note in notes_collection.find({"user_id": user_id}):
         note["_id"] = str(note["_id"])
         notes.append(note)
 
